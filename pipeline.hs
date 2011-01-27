@@ -13,15 +13,18 @@ converter :: (a -> b) -> Action a -> Action b
 converter conversion action callback =  action (callback . conversion)
 
 sequencer :: [Action a] -> Action [a]
-sequencer actions = undefined
+sequencer actions callback = f actions callback []
+ where f [] callback as = do callback as
+                             return ()
+       f (action:actions) callback as = action (\a -> f actions callback (a:as))
 
 concatenator :: Action [[a]] -> Action [a]
 concatenator = converter concat
 
-application = fetchAll print
+application = fetchAll operate
 
 operate :: String -> IO()
-operate = undefined
+operate = print
 
 fetchData = (converter show) . (converter sum) . concatenator . sequencer $ [fetch "first", fetch "second"]
 
