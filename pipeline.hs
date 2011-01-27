@@ -21,7 +21,8 @@ aggregator actions callback = f actions callback []
 concatenator :: Action [[a]] -> Action [a]
 concatenator = converter concat
 
-
+sequencer :: Action a -> (a -> Action b) -> Action b
+sequencer = undefined
 
 application = fetchAll operate
 
