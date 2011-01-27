@@ -1,21 +1,16 @@
-data Callback a = Callback { success :: a -> IO(), failure :: IO() }
-callback :: (a -> IO()) -> IO() -> Callback a
-callback success failure = Callback { success = success, failure = failure }
-
+type Callback a = a -> IO()
 type Action a = Callback a -> IO()
 
 fetch :: String -> Action [Int]
-fetch _ callback = do (success callback) [1, 3]
+fetch _ callback = do callback [1, 3]
                       return ()
 
 fetch' :: String -> Action String
-fetch' _ callback = do (success callback) "prefix"
+fetch' _ callback = do callback "prefix"
                        return ()
 
 converter :: (a -> b) -> Action a -> Action b
-converter conversion action c =  action (callback s f)
-    where s = (success c) . conversion
-          f = failure c
+converter conversion action callback =  action (callback . conversion)
 
 sequencer :: [Action a] -> Action [a]
 sequencer actions = undefined
@@ -23,7 +18,7 @@ sequencer actions = undefined
 concatenator :: Action [[a]] -> Action [a]
 concatenator = converter concat
 
-application = fetchAll (callback print (print "argh!"))
+application = fetchAll print
 
 operate :: String -> IO()
 operate = undefined
