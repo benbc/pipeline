@@ -2,8 +2,11 @@ type Callback a = a -> IO()
 type Action a = Callback a -> IO()
 
 mkFetch :: a -> String -> Action a
-mkFetch result address callback = remote address >>= callback >> return ()
+mkFetch result address callback = remote address >>= passTo callback
     where remote _ = return result
+
+passTo :: Callback a -> a -> IO()
+passTo callback results = callback results >> return ()
 
 fetch :: String -> Action [Int]
 fetch = mkFetch [1, 3]
@@ -16,7 +19,7 @@ converter conversion action callback =  action (callback . conversion)
 
 aggregator :: [Action a] -> Action [a]
 aggregator actions callback = f actions []
- where f [] results = callback results >> return ()
+ where f [] results = passTo callback results
        f (action:actions) results = action (\result -> f actions (result:results))
 
 concatenator :: Action [[a]] -> Action [a]
