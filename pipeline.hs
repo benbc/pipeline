@@ -2,10 +2,8 @@ type Callback a = a -> IO()
 type Action a = Callback a -> IO()
 
 mkFetch :: a -> String -> Action a
-mkFetch result _address callback = do r <- remote
-                                      callback r
-                                      return ()
-    where remote = return result
+mkFetch result address callback = remote address >>= callback >> return ()
+    where remote _ = return result
 
 fetch :: String -> Action [Int]
 fetch = mkFetch [1, 3]
