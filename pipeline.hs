@@ -15,10 +15,10 @@ converter :: (a -> b) -> Action a -> Action b
 converter conversion action callback =  action (callback . conversion)
 
 aggregator :: [Action a] -> Action [a]
-aggregator actions callback = f actions callback []
- where f [] callback as = do callback as
-                             return ()
-       f (action:actions) callback as = action (\a -> f actions callback (a:as))
+aggregator actions callback = f actions []
+ where f [] as = do callback as
+                    return ()
+       f (action:actions) as = action (\a -> f actions (a:as))
 
 concatenator :: Action [[a]] -> Action [a]
 concatenator = converter concat
