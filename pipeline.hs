@@ -26,7 +26,7 @@ concatenator :: Action [[a]] -> Action [a]
 concatenator = converter concat
 
 sequencer :: Action a -> (a -> Action b) -> Action b
-sequencer = undefined
+sequencer first second callback = first (\result -> (second result) callback)
 
 application = fetchAll operate
 
