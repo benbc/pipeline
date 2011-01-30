@@ -16,8 +16,8 @@ converter conversion action callback =  action (callback . conversion)
 
 aggregator :: [Action a] -> Action [a]
 aggregator actions callback = f actions []
- where f [] as = callback as >> return ()
-       f (action:actions) as = action (\a -> f actions (a:as))
+ where f [] results = callback results >> return ()
+       f (action:actions) results = action (\result -> f actions (result:results))
 
 concatenator :: Action [[a]] -> Action [a]
 concatenator = converter concat
