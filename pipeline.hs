@@ -1,13 +1,17 @@
 type Callback a = a -> IO()
 type Action a = Callback a -> IO()
 
+mkFetch :: a -> String -> Action a
+mkFetch result _address callback = do r <- remote
+                                      callback r
+                                      return ()
+    where remote = return result
+
 fetch :: String -> Action [Int]
-fetch _ callback = do callback [1, 3]
-                      return ()
+fetch = mkFetch [1, 3]
 
 fetch' :: String -> Action String
-fetch' _ callback = do callback "prefix"
-                       return ()
+fetch' = mkFetch "prefix"
 
 converter :: (a -> b) -> Action a -> Action b
 converter conversion action callback =  action (callback . conversion)
